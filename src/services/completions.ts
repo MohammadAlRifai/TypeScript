@@ -638,6 +638,7 @@ namespace ts.Completions {
         switch (completion.kind) {
             case StringLiteralCompletionKind.Paths: {
                 const match = find(completion.paths, p => p.name === name);
+                //Well this ain't right son
                 return match && createCompletionDetails(name, ScriptElementKindModifier.none, match.kind, [textPart(name)]);
             }
             case StringLiteralCompletionKind.Properties: {

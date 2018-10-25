@@ -1,19 +1,23 @@
 /* @internal */
 namespace ts.Completions.PathCompletions {
+    //rename
     export interface NameAndKind {
         readonly name: string;
         readonly kind: ScriptElementKind.scriptElement | ScriptElementKind.directory | ScriptElementKind.externalModuleName;
+        readonly directoryPath: string;
+        //we should also provide the full path!
     }
     export interface PathCompletion extends NameAndKind {
         readonly span: TextSpan | undefined;
     }
 
-    function nameAndKind(name: string, kind: NameAndKind["kind"]): NameAndKind {
-        return { name, kind };
+    //name
+    function nameAndKind(name: string, kind: NameAndKind["kind"], directoryPath: string): NameAndKind {
+        return { name, kind, directoryPath };
     }
     function addReplacementSpans(text: string, textStart: number, names: ReadonlyArray<NameAndKind>): ReadonlyArray<PathCompletion> {
         const span = getDirectoryFragmentTextSpan(text, textStart);
-        return names.map(({ name, kind }): PathCompletion => ({ name, kind, span }));
+        return names.map(({ name, kind, directoryPath }): PathCompletion => ({ name, kind, directoryPath, span }));
     }
 
     export function getStringLiteralCompletionsFromModuleNames(sourceFile: SourceFile, node: LiteralExpression, compilerOptions: CompilerOptions, host: LanguageServiceHost, typeChecker: TypeChecker): ReadonlyArray<PathCompletion> {
@@ -144,7 +148,7 @@ namespace ts.Completions.PathCompletions {
             }
 
             forEachKey(foundFiles, foundFile => {
-                result.push(nameAndKind(foundFile, ScriptElementKind.scriptElement));
+                result.push(nameAndKind(foundFile, ScriptElementKind.scriptElement, baseDirectory));
             });
         }
 
